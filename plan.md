@@ -449,3 +449,124 @@ Polish
 * Multiplayer moderator sync
 * AI moderator assistant
 * Online save
+
+
+---
+
+# Role Engine
+
+Every role must be configuration-driven.
+
+Role structure:
+
+- id
+- name
+- team
+- description
+- image
+- nightAction
+- passiveAbility
+- winCondition
+
+Example:
+
+Werewolf
+- nightAction: kill
+
+Doctor
+- nightAction: heal
+
+Seer
+- nightAction: investigate
+
+Hunter
+- passiveAbility: revengeKill
+
+---
+
+# Phase State Machine
+
+Setup
+→ Role Reveal
+→ Night
+→ Morning Result
+→ Discussion
+→ Voting
+→ Elimination
+→ Win Check
+→ Night
+
+Implement as a finite state machine to simplify future role expansion.
+
+---
+
+# Night Action Resolution
+
+Night actions must be resolved using priority order.
+
+Default Priority:
+
+1. Protection / Heal
+2. Kill
+3. Investigation
+4. Passive Effects
+5. Win Condition Check
+
+All priorities must be configurable.
+
+---
+
+# Save System
+
+Persist automatically:
+
+- Current game
+- Players
+- Roles
+- Day
+- Phase
+- Night actions
+- Votes
+
+Requirements:
+
+- Auto-save after every action
+- Restore unfinished game on startup
+- Offline-first behavior
+
+---
+
+# Role Assets
+
+Store all role assets locally.
+
+assets/roles/
+
+- werewolf.webp
+- seer.webp
+- doctor.webp
+- villager.webp
+- hunter.webp
+- witch.webp
+
+---
+
+# MVP Roles
+
+Core Roles:
+
+- Villager
+- Werewolf
+- Seer
+- Doctor
+- Hunter
+- Witch
+
+Future Roles:
+
+- Alpha Wolf
+- Cupid
+- Bodyguard
+- Tanner
+- Sheriff
+- Jester

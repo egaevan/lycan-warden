@@ -180,6 +180,11 @@ Requirements:
 
 Create:
 
+* entities
+* features
+* widgets
+* pages
+* shared
 * Reusable components
 * Responsive layouts
 * Mobile-first implementation
@@ -200,6 +205,8 @@ All state should be mocked.
 You are a senior React architect.
 
 Create a complete production-ready project based on the generated UI.
+
+Use Feature-Sliced Design architecture.
 
 Stack:
 
@@ -259,6 +266,11 @@ No backend.
 Read plan.md.
 
 Implement the complete Werewolf game engine.
+
+Use state machine architecture.
+Use role registry pattern.
+Do not hardcode role behavior.
+All role behavior must be extensible through configuration.
 
 Features:
 

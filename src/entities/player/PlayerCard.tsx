@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import type { Player } from '@/src/shared/types/game'
+import type { Player } from '@/shared/types/game'
 
 interface PlayerCardProps {
   player: Player

@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { PlayerCard } from '@/src/entities/player/PlayerCard'
-import type { Player } from '@/src/shared/types/game'
+import { PlayerCard } from '@/entities/player/PlayerCard'
+import type { Player } from '@/shared/types/game'
 
 interface PlayerSelectionContainerProps {
   players: Player[]

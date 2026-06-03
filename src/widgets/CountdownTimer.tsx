@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Play, Pause, RotateCcw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { formatTime } from '@/src/shared/utils/helpers'
+import { formatTime } from '@/shared/utils/helpers'
 
 interface CountdownTimerProps {
   initialSeconds: number

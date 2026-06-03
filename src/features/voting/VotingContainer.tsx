@@ -2,10 +2,10 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { PlayerCard } from '@/src/entities/player/PlayerCard'
+import { PlayerCard } from '@/entities/player/PlayerCard'
 import { Card } from '@/components/ui/card'
-import type { Player } from '@/src/shared/types/game'
-import { getHighestVoted } from '@/src/shared/utils/helpers'
+import type { Player } from '@/shared/types/game'
+import { getHighestVoted } from '@/shared/utils/helpers'
 
 interface VotingContainerProps {
   players: Player[]

@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { RoleCard } from '@/src/entities/role/RoleCard'
-import { GAME_ROLES } from '@/src/shared/constants/roles'
-import type { GameRole } from '@/src/shared/types/game'
+import { RoleCard } from '@/entities/role/RoleCard'
+import { GAME_ROLES } from '@/shared/constants/roles'
+import type { GameRole } from '@/shared/types/game'
 
 interface RoleSelectionContainerProps {
   onComplete: (selectedRoles: string[]) => void

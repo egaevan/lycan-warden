@@ -13,6 +13,7 @@ export function useGameState() {
       const players: Player[] = Array.from({ length: playerCount }, (_, i) => ({
         id: `player-${i + 1}`,
         number: i + 1,
+        name: `Player ${i + 1}`,
         role: null,
         alive: true,
         eliminated: false,
@@ -28,6 +29,11 @@ export function useGameState() {
         currentPhase: 'setup',
         dayNumber: 0,
         nightNumber: 0,
+        nightActions: [],
+        votes: {},
+        eliminationHistory: [],
+        log: [],
+        winner: null,
         createdAt: new Date(),
         updatedAt: new Date(),
       }

@@ -1,7 +1,5 @@
-'use client'
-
-import { Moon, Sun, Hand, Settings } from 'lucide-react'
-import type { GamePhase } from '@/src/shared/types/game'
+import { Moon, Sun, Hand, Settings, Skull, MessageCircle } from 'lucide-react'
+import type { GamePhase } from '@/shared/types/game'
 
 interface PhaseIndicatorProps {
   phase: GamePhase
@@ -16,7 +14,7 @@ export function PhaseIndicator({
   nightNumber,
   compact,
 }: PhaseIndicatorProps) {
-  const phaseConfig = {
+  const phaseConfig: Record<GamePhase, { icon: React.ComponentType<{ className?: string }>; label: string; color: string; bgColor: string; description: string }> = {
     setup: {
       icon: Settings,
       label: 'Setup',
@@ -38,6 +36,13 @@ export function PhaseIndicator({
       bgColor: 'bg-indigo-900/30 border-indigo-700/50',
       description: 'Assigning roles to players',
     },
+    'role-reveal': {
+      icon: Settings,
+      label: 'Role Reveal',
+      color: 'text-amber-400',
+      bgColor: 'bg-amber-900/30 border-amber-700/50',
+      description: 'Revealing roles to players',
+    },
     night: {
       icon: Moon,
       label: 'Night Phase',
@@ -45,11 +50,18 @@ export function PhaseIndicator({
       bgColor: 'bg-blue-900/30 border-blue-700/50',
       description: 'Werewolves choose their target',
     },
-    day: {
+    morning: {
       icon: Sun,
-      label: 'Day Phase',
+      label: 'Morning',
       color: 'text-yellow-400',
       bgColor: 'bg-yellow-900/30 border-yellow-700/50',
+      description: 'Night results are revealed',
+    },
+    discussion: {
+      icon: MessageCircle,
+      label: 'Discussion',
+      color: 'text-amber-400',
+      bgColor: 'bg-amber-900/30 border-amber-700/50',
       description: 'Discussion & accusations',
     },
     voting: {
@@ -58,6 +70,13 @@ export function PhaseIndicator({
       color: 'text-orange-400',
       bgColor: 'bg-orange-900/30 border-orange-700/50',
       description: 'Cast your votes',
+    },
+    elimination: {
+      icon: Skull,
+      label: 'Elimination',
+      color: 'text-red-400',
+      bgColor: 'bg-red-900/30 border-red-700/50',
+      description: 'A player is eliminated',
     },
     ended: {
       icon: Sun,
@@ -77,7 +96,7 @@ export function PhaseIndicator({
         <Icon className={`w-4 h-4 ${config.color}`} />
         <span className={`text-xs font-semibold ${config.color}`}>
           {config.label}
-          {dayNumber && phase === 'day' && ` ${dayNumber}`}
+          {dayNumber && phase === 'discussion' && ` ${dayNumber}`}
           {nightNumber && phase === 'night' && ` ${nightNumber}`}
         </span>
       </div>
@@ -97,7 +116,7 @@ export function PhaseIndicator({
         <div>
           <h3 className={`text-xl font-bold ${config.color}`}>
             {config.label}
-            {dayNumber && phase === 'day' && ` ${dayNumber}`}
+            {dayNumber && (phase === 'discussion' || phase === 'voting' || phase === 'elimination') && ` ${dayNumber}`}
             {nightNumber && phase === 'night' && ` ${nightNumber}`}
           </h3>
           <p className="text-sm text-gray-400 mt-1">{config.description}</p>

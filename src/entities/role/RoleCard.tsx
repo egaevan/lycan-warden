@@ -2,7 +2,7 @@
 
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import type { GameRole } from '@/src/shared/types/game'
+import type { GameRole } from '@/shared/types/game'
 
 interface RoleCardProps {
   role: GameRole

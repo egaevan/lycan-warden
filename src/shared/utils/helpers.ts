@@ -1,49 +1,50 @@
-import type { Player } from '../types/game'
+import type { Player, PlayerAlignment } from '@/shared/types/game'
 
-export const formatTime = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60)
-  const secs = seconds % 60
-  return `${mins}:${secs.toString().padStart(2, '0')}`
+export function formatTime(seconds: number): string {
+  const m = Math.floor(seconds / 60)
+  const s = seconds % 60
+  return `${m}:${s.toString().padStart(2, '0')}`
 }
 
-export const getPlayersByAlignment = (
-  players: Player[],
-  alignment: string,
-) => {
-  return players.filter((p) => p.role?.alignment === alignment && p.alive)
+export function getPlayersByAlignment(players: Player[], alignment: PlayerAlignment): Player[] {
+  return players.filter((p) => p.role?.alignment === alignment)
 }
 
-export const getAlivePlayerCount = (players: Player[]): number => {
+export function getAlivePlayerCount(players: Player[]): number {
   return players.filter((p) => p.alive).length
 }
 
-export const getWinCondition = (
-  players: Player[],
-): 'villagers' | 'werewolves' | null => {
-  const aliveWerewolves = getPlayersByAlignment(players, 'werewolf')
-  const aliveVillagers = getPlayersByAlignment(players, 'village')
+export function getWinCondition(players: Player[]): PlayerAlignment | null {
+  const aliveWerewolves = players.filter(
+    (p) => p.alive && p.role?.alignment === 'werewolf'
+  ).length
+  const aliveNonWerewolves = players.filter(
+    (p) => p.alive && p.role?.alignment !== 'werewolf'
+  ).length
 
-  if (aliveWerewolves.length === 0) return 'villagers'
-  if (aliveWerewolves.length >= aliveVillagers.length) return 'werewolves'
+  if (aliveWerewolves === 0) return 'village'
+  if (aliveWerewolves >= aliveNonWerewolves) return 'werewolf'
   return null
 }
 
-export const getHighestVoted = (players: Player[]): Player | null => {
-  if (players.length === 0) return null
-  return players.reduce((prev, current) =>
-    prev.voteCount > current.voteCount ? prev : current,
-  )
+export function getHighestVoted(players: Player[]): Player | null {
+  return players.reduce<Player | null>((highest, player) => {
+    if (!player.alive) return highest
+    if (!highest || player.voteCount > highest.voteCount) return player
+    return highest
+  }, null)
 }
 
-export const shuffleArray = <T,>(array: T[]): T[] => {
+export function shuffleArray<T>(array: T[]): T[] {
   const shuffled = [...array]
   for (let i = shuffled.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
   }
   return shuffled
 }
 
-export const generateGameId = (): string => {
-  return `game-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+export function generateGameId(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  return Array.from({ length: 8 }, () => chars[Math.floor(Math.random() * chars.length)]).join('')
 }

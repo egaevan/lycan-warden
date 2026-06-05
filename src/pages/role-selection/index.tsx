@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -8,6 +9,7 @@ import { AppLayout } from '@/shared/components/AppLayout'
 import { GAME_ROLES, GAME_PRESETS } from '@/shared/constants/roles'
 import { ROUTES } from '@/shared/config/routes'
 import { useGameStore } from '@/shared/store'
+import { PageTransition } from '@/shared/components/PageTransition'
 
 export function RoleSelectionPage() {
   const navigate = useNavigate()
@@ -75,103 +77,113 @@ export function RoleSelectionPage() {
   if (storePlayers.length === 0) {
     return (
       <AppLayout title="Role Selection" showBack>
-        <div className="text-center py-12 text-gray-400">
-          No game in progress. Start a new game first.
-        </div>
+        <div className="text-center py-12 text-gray-400" role="status">No game in progress. Start a new game first.</div>
       </AppLayout>
     )
   }
 
   return (
     <AppLayout title="Role Selection" showBack>
-      <div className="w-full max-w-3xl mx-auto space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-amber-100 mb-1">Select Roles</h2>
-            <p className="text-gray-400 text-sm">
-              {totalSelected} of {playerCount} roles assigned
-              {isValid ? ' ✓' : ''}
-            </p>
+      <PageTransition>
+        <div className="w-full max-w-3xl mx-auto space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h2 className="text-2xl font-bold text-amber-100 mb-1">Select Roles</h2>
+              <p className="text-gray-400 text-sm" aria-live="polite">
+                {totalSelected} of {playerCount} roles assigned
+                {isValid && ' ✓'}
+              </p>
+            </div>
+            <Button
+              onClick={handleConfirm}
+              disabled={!isValid}
+              className="bg-amber-600 hover:bg-amber-700 text-amber-950 w-full sm:w-auto"
+              aria-label={isValid ? 'Confirm role selection' : `Need exactly ${playerCount} roles, selected ${totalSelected}`}
+            >
+              Confirm <ChevronRight className="ml-1 h-4 w-4" />
+            </Button>
           </div>
-          <Button
-            onClick={handleConfirm}
-            disabled={!isValid}
-            className="bg-amber-600 hover:bg-amber-700 text-amber-950"
-          >
-            Confirm <ChevronRight className="ml-1 h-4 w-4" />
-          </Button>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {Object.entries(GAME_ROLES).map(([id, role]) => {
-            const count = roleCounts[id] ?? 0
-            return (
-              <Card
-                key={id}
-                className={`bg-gray-900/50 border-gray-700 p-5 flex items-start gap-4 ${
-                  count > 0 ? 'ring-1 ring-amber-600/50' : 'opacity-60'
-                }`}
-              >
-                <div className="flex-1 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-amber-100">{role.name}</h3>
-                    <Badge
-                      variant="outline"
-                      className={`text-xs border ${
-                        role.alignment === 'werewolf'
-                          ? 'bg-red-900/50 text-red-200 border-red-700'
-                          : role.alignment === 'village'
-                          ? 'bg-emerald-900/50 text-emerald-200 border-emerald-700'
-                          : 'bg-amber-900/50 text-amber-200 border-amber-700'
-                      }`}
-                    >
-                      {role.alignment}
-                    </Badge>
-                  </div>
-                  <p className="text-xs text-gray-400">{role.description}</p>
-                </div>
-
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 border-gray-600 text-gray-400 hover:text-amber-100 hover:border-amber-600"
-                    onClick={() => decrementRole(id)}
-                    disabled={count <= 0}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4" role="list" aria-label="Available roles">
+            {Object.entries(GAME_ROLES).map(([id, role], index) => {
+              const count = roleCounts[id] ?? 0
+              return (
+                <motion.div
+                  key={id}
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.04, type: 'spring', stiffness: 260, damping: 24 }}
+                  role="listitem"
+                >
+                  <Card
+                    className={`bg-gray-900/50 border-gray-700 p-5 flex items-start gap-4 ${
+                      count > 0 ? 'ring-1 ring-amber-600/50' : 'opacity-60'
+                    }`}
                   >
-                    <Minus className="h-3 w-3" />
-                  </Button>
-                  <span className="w-6 text-center font-bold text-amber-100 text-sm">
-                    {count}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="h-8 w-8 border-gray-600 text-gray-400 hover:text-amber-100 hover:border-amber-600"
-                    onClick={() => incrementRole(id)}
-                    disabled={totalSelected >= playerCount}
-                  >
-                    <Plus className="h-3 w-3" />
-                  </Button>
-                </div>
-              </Card>
-            )
-          })}
-        </div>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className="font-semibold text-amber-100">{role.name}</h3>
+                        <Badge
+                          variant="outline"
+                          className={`text-xs border ${
+                            role.alignment === 'werewolf'
+                              ? 'bg-red-900/50 text-red-200 border-red-700'
+                              : role.alignment === 'village'
+                              ? 'bg-emerald-900/50 text-emerald-200 border-emerald-700'
+                              : 'bg-amber-900/50 text-amber-200 border-amber-700'
+                          }`}
+                        >
+                          {role.alignment}
+                        </Badge>
+                      </div>
+                      <p className="text-xs text-gray-400">{role.description}</p>
+                    </div>
 
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <span>
-            Roles selected: <strong className="text-amber-100">{totalSelected}</strong> / {playerCount}
-          </span>
-          {!isValid && totalSelected !== playerCount && (
-            <span className="text-amber-400">
-              {totalSelected < playerCount
-                ? `Need ${playerCount - totalSelected} more`
-                : `${totalSelected - playerCount} too many`}
+                    <div className="flex items-center gap-2 flex-shrink-0" role="group" aria-label={`Adjust ${role.name} count`}>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10 border-gray-600 text-gray-400 hover:text-amber-100 hover:border-amber-600"
+                        onClick={() => decrementRole(id)}
+                        disabled={count <= 0}
+                        aria-label={`Decrease ${role.name} count`}
+                      >
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="w-8 text-center font-bold text-amber-100 text-sm" aria-live="polite" aria-atomic="true">
+                        {count}
+                      </span>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="h-10 w-10 border-gray-600 text-gray-400 hover:text-amber-100 hover:border-amber-600"
+                        onClick={() => incrementRole(id)}
+                        disabled={totalSelected >= playerCount}
+                        aria-label={`Increase ${role.name} count`}
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </Card>
+                </motion.div>
+              )
+            })}
+          </div>
+
+          <div className="flex items-center justify-between text-sm text-gray-500">
+            <span>
+              Roles selected: <strong className="text-amber-100">{totalSelected}</strong> / {playerCount}
             </span>
-          )}
+            {!isValid && totalSelected !== playerCount && (
+              <span className="text-amber-400" role="alert">
+                {totalSelected < playerCount
+                  ? `Need ${playerCount - totalSelected} more`
+                  : `${totalSelected - playerCount} too many`}
+              </span>
+            )}
+          </div>
         </div>
-      </div>
+      </PageTransition>
     </AppLayout>
   )
 }

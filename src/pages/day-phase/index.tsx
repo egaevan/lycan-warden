@@ -25,6 +25,7 @@ export function DayPhasePage() {
   )
 
   const nightKills = eliminationHistory.filter((e) => e.method === 'night-kill' || e.method === 'poison')
+  const morningAnnouncements = useGameStore((s) => s.morningAnnouncements)
 
   const handleVotingDone = () => {
     const winner = checkWinner()
@@ -42,6 +43,22 @@ export function DayPhasePage() {
       color: 'text-amber-400',
       content: (
         <>
+          {morningAnnouncements.length > 0 && (
+            <div className="space-y-1">
+              {morningAnnouncements.map((msg, i) => (
+                <motion.p
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.08 }}
+                  className="text-indigo-300 text-sm"
+                >
+                  {msg}
+                </motion.p>
+              ))}
+              <hr className="border-gray-700 my-2" />
+            </div>
+          )}
           {nightKills.length > 0 ? (
             <div className="space-y-2">
               {nightKills.map((e) => (

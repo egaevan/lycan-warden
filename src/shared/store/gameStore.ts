@@ -21,6 +21,7 @@ export interface GameState {
   eliminationHistory: EliminationRecord[]
   log: GameLogEntry[]
   currentStep: number
+  morningAnnouncements: string[]
 }
 
 interface GameActions {
@@ -62,6 +63,7 @@ const initialState: GameState = {
   eliminationHistory: [],
   log: [],
   currentStep: 0,
+  morningAnnouncements: [],
 }
 
 let nightActionIdCounter = 0
@@ -105,6 +107,7 @@ export const useGameStore = create<GameState & GameActions>()(
           eliminationHistory: [],
           log: [],
           currentStep: 0,
+          morningAnnouncements: [],
         })
       },
 
@@ -205,6 +208,7 @@ export const useGameStore = create<GameState & GameActions>()(
           nightActions: result.resolvedActions,
           eliminationHistory: [...get().eliminationHistory, ...result.eliminationRecords],
           log: [...get().log, ...result.logEntries],
+          morningAnnouncements: result.morningAnnouncements,
         })
       },
 
@@ -281,7 +285,7 @@ export const useGameStore = create<GameState & GameActions>()(
 
       advanceToDiscussion: () => {
         const { dayNumber } = get()
-        set({ currentPhase: 'discussion', dayNumber: dayNumber + 1, currentStep: 0 })
+        set({ currentPhase: 'discussion', dayNumber: dayNumber + 1, currentStep: 0, morningAnnouncements: [] })
       },
 
       advanceToElimination: () => {
@@ -323,6 +327,7 @@ export const useGameStore = create<GameState & GameActions>()(
         eliminationHistory: state.eliminationHistory,
         log: state.log,
         currentStep: state.currentStep,
+        morningAnnouncements: state.morningAnnouncements,
       }),
     }
   )

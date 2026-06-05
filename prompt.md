@@ -425,3 +425,51 @@ Requirements:
 - Use state machine pattern for phase transitions
 - Type-safe throughout
 - No backend dependency
+
+---
+
+# Prompt 9 - Night Action Results & Investigation Display
+
+Read plan.md.
+
+Enhance the night action system with two display features:
+
+### 1. Investigation Result Visibility
+
+When a role with `nightAction: 'investigate'` (e.g. Seer) selects a target, the result must be shown immediately in the night phase UI:
+
+- Compute the result from the target's role: `target.role.teamDetectionResult ?? target.role.alignment`
+- Display an inline result badge below the target picker:
+  - Werewolf → red text: "{Player name} is a Werewolf"
+  - Village → green text: "{Player name} is a Villager"
+- The result is also recorded in the morning announcements list
+
+Files:
+- `src/pages/night-phase/index.tsx` — show investigation result when target is selected
+
+### 2. Night Action Results in Morning
+
+When night actions are resolved, certain events need to be announced during the morning phase:
+
+Add a `morningAnnouncements: string[]` field to the Zustand store:
+
+- Populated during `resolveNightActions` in `gameEngine.ts`
+- Successful protection that blocked a kill: "{Player} was protected from an attack last night."
+- Successful heal that blocked poison: "{Player} was saved from poison last night."
+- All investigation results: "{Actor} investigated {Target} — they are a Werewolf/Villager."
+- Revivals: "{Player} has been revived!"
+
+Display these announcements in the morning step of the day phase, above the death list, separated by a divider.
+
+Clear `morningAnnouncements` when transitioning from morning to discussion.
+
+Files:
+- `src/shared/lib/gameEngine.ts` — add `morningAnnouncements` to return type; collect blocked kills, blocked poisons, investigations, revivals
+- `src/shared/store/gameStore.ts` — add `morningAnnouncements` to state, persist, populate in `resolveCurrentNight`, clear in `advanceToDiscussion`
+- `src/pages/day-phase/index.tsx` — render announcements in morning step
+
+### 3. Gameplay Interaction
+
+- If Bodyguard successfully blocks a kill → announce it in morning
+- If Healer saves a poisoned player → announce it in morning
+- If no deaths and no announcements → still show "The night passed peacefully. No one died."

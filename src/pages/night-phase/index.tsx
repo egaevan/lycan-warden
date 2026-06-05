@@ -54,6 +54,12 @@ export function NightPhasePage() {
     ? players.filter((p) => p.alive && p.role?.id === currentRole.id)
     : []
 
+  const selectedTargetPlayer = selectedTarget ? players.find((p) => p.id === selectedTarget) : null
+  const isInvestigation = currentRole?.nightAction === 'investigate'
+  const investigationLabel = selectedTargetPlayer?.role
+    ? selectedTargetPlayer.role.teamDetectionResult ?? selectedTargetPlayer.role.alignment
+    : null
+
   const handleRecordAction = () => {
     if (!currentRole || !currentRole.nightAction || !selectedTarget) return
 
@@ -181,6 +187,21 @@ export function NightPhasePage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {isInvestigation && selectedTarget && investigationLabel && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-3 rounded-lg border text-center bg-indigo-900/20 border-indigo-700/50"
+            >
+              <p className="text-xs text-indigo-400 mb-1">Investigation Result</p>
+              <p className={`text-sm font-bold ${
+                investigationLabel === 'werewolf' ? 'text-red-400' : 'text-emerald-400'
+              }`}>
+                {selectedTargetPlayer?.name} is {investigationLabel === 'werewolf' ? 'a Werewolf' : 'a Villager'}
+              </p>
+            </motion.div>
+          )}
 
           <div className="flex gap-3">
             {currentStep < nightSteps.length - 1 ? (

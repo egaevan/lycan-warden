@@ -61,16 +61,20 @@ export function resolveNightActions(
   resolvedActions: NightActionRecord[]
   eliminationRecords: EliminationRecord[]
   logEntries: GameLogEntry[]
+  morningAnnouncements: string[]
 } {
   const orderedActions = getNightActionOrder(nightActionRecords)
   const resolvedActions: NightActionRecord[] = []
   const eliminationRecords: EliminationRecord[] = []
   const logEntries: GameLogEntry[] = []
+  const morningAnnouncements: string[] = []
   const killTargets = new Set<string>()
   const protectedPlayers = new Set<string>()
   const healedPlayers = new Set<string>()
   const revivedPlayers = new Set<string>()
   const poisonedPlayers = new Set<string>()
+  const blockedKills = new Set<string>()
+  const blockedPoisons = new Set<string>()
   let updatedPlayers = structuredClone(players)
 
   for (const action of orderedActions) {
@@ -113,6 +117,8 @@ export function resolveNightActions(
         if (target) {
           if (!protectedPlayers.has(target.id) && !healedPlayers.has(target.id)) {
             killTargets.add(target.id)
+          } else {
+            blockedKills.add(target.id)
           }
           resolvedActions.push({ ...action, resolved: true, result: 'success' })
           logEntries.push(
@@ -125,6 +131,8 @@ export function resolveNightActions(
         if (target) {
           if (!healedPlayers.has(target.id)) {
             poisonedPlayers.add(target.id)
+          } else {
+            blockedPoisons.add(target.id)
           }
           resolvedActions.push({ ...action, resolved: true, result: 'success' })
           logEntries.push(
@@ -145,8 +153,10 @@ export function resolveNightActions(
             }
           }
           resolvedActions.push({ ...action, resolved: true, result: 'success' })
+          const label = result === 'werewolf' ? 'a Werewolf' : result === 'village' ? 'a Villager' : result
+          morningAnnouncements.push(`${actor.name} investigated ${target.name} — they are ${label}.`)
           logEntries.push(
-            createGameLog('night', 0, nightNumber, `${actor.name} investigated ${target.name}`, 'action')
+            createGameLog('night', 0, nightNumber, `${actor.name} investigated ${target.name} — ${label}`, 'action')
           )
         }
         break
@@ -173,9 +183,24 @@ export function resolveNightActions(
     if (idx !== -1) {
       updatedPlayers[idx] = { ...updatedPlayers[idx], alive: true, eliminated: false }
       const p = updatedPlayers[idx]
+      morningAnnouncements.push(`${p.name} has been revived!`)
       logEntries.push(
         createGameLog('night', 0, nightNumber, `${p.name} has been revived!`, 'result')
       )
+    }
+  }
+
+  for (const playerId of blockedKills) {
+    const p = updatedPlayers.find((p) => p.id === playerId)
+    if (p) {
+      morningAnnouncements.push(`${p.name} was protected from an attack last night.`)
+    }
+  }
+
+  for (const playerId of blockedPoisons) {
+    const p = updatedPlayers.find((p) => p.id === playerId)
+    if (p) {
+      morningAnnouncements.push(`${p.name} was saved from poison last night.`)
     }
   }
 
@@ -217,7 +242,7 @@ export function resolveNightActions(
     }
   }
 
-  return { updatedPlayers, resolvedActions, eliminationRecords, logEntries }
+  return { updatedPlayers, resolvedActions, eliminationRecords, logEntries, morningAnnouncements }
 }
 
 export function calculateVoteResults(

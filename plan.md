@@ -246,6 +246,40 @@ Examples:
 
 If a role has multiple actors (e.g., two werewolves), each actor selects independently or the moderator selects once for the group.
 
+### Investigation Result Display
+
+When a Seer (or any investigate-role) selects a target:
+
+1. The investigation result is computed immediately from the target's role config
+2. A result badge appears in the night phase UI showing the target's alignment
+3. The result is also recorded in the morning announcements
+4. The result uses `teamDetectionResult` (if set) or falls back to `alignment`
+
+Display:
+
+- Werewolf → red badge: "Player X is a Werewolf"
+- Villager → green badge: "Player X is a Villager"
+- Neutral → purple badge
+
+The result is visible only to the moderator in the night phase UI.
+
+---
+
+### Night Action Results (Morning Announcements)
+
+When night actions finish resolving, the following events are announced in the morning:
+
+| Event | Display |
+|-------|---------|
+| Successful protect blocked a kill | "{Player} was protected from an attack last night." |
+| Successful heal blocked poison | "{Player} was saved from poison last night." |
+| Player revived | "{Player} has been revived!" |
+| Investigation | "{Actor} investigated {Target} — they are {alignment}." |
+
+These announcements appear above the death announcements in the morning step, separated by a divider.
+
+If there are no announcements and no deaths, the morning shows: "The night passed peacefully. No one died."
+
 ---
 
 ### Day Phase

@@ -319,3 +319,109 @@ Add:
 * Error boundaries
 
 Ensure production readiness.
+
+---
+
+# Prompt 7 - OpenCode Night Target Selection & Player Table
+
+Read plan.md.
+
+Implement the two pending features described in the updated plan:
+
+### 1. Night Action Target Selection
+
+During night phase, each role with a night ability needs a target picker:
+
+- For the current night step (e.g. Werewolves), show a list of alive players
+- Moderator selects which player the ability targets
+- Record the night action with the selected target ID
+- Support the case where multiple players have the same role (e.g. two werewolves) — either each picks independently or the moderator picks once for the group
+- Move to next step after target is confirmed
+
+Current night-phase page (`src/pages/night-phase/index.tsx`) already steps through roles but records actions with `targetId: null`. Update it to:
+
+1. Display a player selection list when a night role step is active
+2. Let the moderator pick a target before recording the action
+3. Pass the selected `targetId` to `recordNightAction`
+4. For group roles, allow selecting one target for all actors of that role
+
+### 2. Player Status Table
+
+The dashboard (`src/pages/dashboard/index.tsx`) already has a players tab with a basic table. Enhance it:
+
+- Ensure the table displays: player number, name, role, and alive/dead status
+- Color-coded status badges (emerald for alive, red for dead)
+- Read-only table — information display only
+- Already exists but may need styling/accessibility polish to match plan spec
+
+Also add the status table to the Moderator Dashboard section of the game layout as the primary view.
+
+Requirements:
+
+- Reuse existing `PlayerCard` or `Table` components
+- Type-safe
+- Use Zustand store for player data
+- Responsive (scrollable on mobile)
+
+---
+
+# Prompt 8 - OpenCode Game Engine Deep Dive
+
+Read plan.md.
+
+Refine and harden the existing game engine implementation.
+
+### Phase State Machine
+Ensure the phase sequence is implemented as a strict finite state machine:
+- Setup → Role Reveal → Night → Morning → Discussion → Voting → Elimination → Win Check → Night (repeat)
+- Transitions must be validated — only allowed transitions can execute
+- Guard conditions: elimination can go to ended (if win condition met) or back to night
+- Reject invalid transitions with a clear error
+
+### Night Action Resolution
+Verify actions are resolved in priority order:
+- Protection / Heal (priority 10-20) execute first
+- Kill (priority 30) executes next — blocked if target is protected or healed
+- Poison (priority 40) executes next — blocked if target is healed
+- Investigation (priority 50) executes last
+- All priorities must be configurable per role definition
+- Protection blocks kills only; heal saves from both kill and poison
+
+### Day Phase
+- Announce night results: show which players died (or peaceful night)
+- Allow starting a discussion timer (5/10/15/20 min or custom)
+- Transition to voting phase
+
+### Voting & Elimination
+- Each alive player casts one vote
+- Player with the most votes is eliminated
+- Ties result in no elimination
+- Record every elimination in the history log
+- Support passive abilities on elimination (e.g. Hunter's revenge kill kills a random voter)
+
+### Win Condition Engine
+- Villager victory: all werewolves eliminated
+- Werewolf victory: number of werewolves >= number of non-werewolves
+- Check after every elimination (both night kills and vote eliminations)
+- Support neutral/override win conditions per role config
+
+### Player Status Table
+- Read-only table with columns: player number, name, role, alive/dead status
+- Color-coded status badges (emerald for alive, red for dead)
+- Updated in real-time as eliminations occur
+- Accessible via the moderator dashboard
+
+### Save System
+- Auto-save after every action via Zustand persist middleware
+- Restore unfinished game on startup
+- Persist: current game, players, roles, day, phase, night actions, votes, elimination history, game log
+
+Requirements:
+
+- All role behavior must be configuration-driven, not hardcoded
+- Use role registry pattern for extensibility
+- Support future custom roles without engine changes
+- Store game state in Zustand with persist middleware
+- Use state machine pattern for phase transitions
+- Type-safe throughout
+- No backend dependency

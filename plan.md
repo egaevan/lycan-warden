@@ -227,6 +227,25 @@ Example:
 
 Moderator records actions.
 
+### Night Action Target Selection
+
+For each role with a night ability, the moderator selects a target:
+
+1. Display the role name and ability description
+2. Show a list of alive players
+3. Moderator selects which player the ability targets
+4. Record the action with the selected target
+5. Move to the next role step
+
+Examples:
+
+* Werewolf → selects one alive player to kill
+* Doctor → selects one alive player to heal
+* Seer → selects one alive player to investigate
+* Witch → selects one alive player to poison or heal
+
+If a role has multiple actors (e.g., two werewolves), each actor selects independently or the moderator selects once for the group.
+
 ---
 
 ### Day Phase
@@ -271,6 +290,24 @@ Display:
 * Current phase
 
 Visible only to moderator.
+
+### Player Status Table
+
+A table view displaying all players with their current game status:
+
+| Column | Description |
+|--------|-------------|
+| # | Player number |
+| Name | Player name |
+| Role | Assigned role name |
+| Status | Alive or Dead (with color indicator) |
+
+Features:
+* Sortable by player number or name
+* Color-coded status badges (green for alive, red for dead)
+* Role visibility only for moderator
+* Updated in real-time as eliminations occur
+* Accessible via a dedicated "Players" tab in the dashboard
 
 ---
 

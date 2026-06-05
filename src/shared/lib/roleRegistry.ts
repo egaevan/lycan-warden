@@ -19,12 +19,12 @@ export function getRolesWithNightAction(): RoleConfig[] {
 
 export function getNightActionPriority(actionType: NightActionType): number {
   const actionPriorities: Record<NightActionType, number> = {
-    revive: 10,
-    heal: 20,
-    protect: 30,
-    kill: 40,
-    poison: 50,
-    investigate: 60,
+    revive: 5,
+    heal: 10,
+    protect: 20,
+    kill: 30,
+    poison: 40,
+    investigate: 50,
   }
   return actionPriorities[actionType] ?? 100
 }

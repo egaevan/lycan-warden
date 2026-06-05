@@ -3,6 +3,7 @@ import { persist } from 'zustand/middleware'
 import type { GamePhase, Player, GamePreset, PlayerAlignment, NightActionRecord, VoteRecord, EliminationRecord, GameLogEntry } from '@/shared/types/game'
 import { GAME_ROLES, GAME_PRESETS } from '@/shared/constants/roles'
 import { resolveNightActions, determineElimination, executeElimination, checkWinCondition, createGameLog } from '@/shared/lib/gameEngine'
+import { canTransition } from '@/shared/lib/phaseMachine'
 
 export interface GameState {
   id: string | null
@@ -133,7 +134,11 @@ export const useGameStore = create<GameState & GameActions>()(
       },
 
       setPhase: (phase) => {
-        const { dayNumber, nightNumber } = get()
+        const { currentPhase, dayNumber, nightNumber } = get()
+        if (!canTransition(currentPhase, phase)) {
+          console.warn(`Invalid phase transition: ${currentPhase} → ${phase}`)
+          return
+        }
         set({
           currentPhase: phase,
           dayNumber: phase === 'discussion' || phase === 'voting' || phase === 'elimination' ? dayNumber + 1 : dayNumber,

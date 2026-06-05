@@ -8,6 +8,8 @@ import { GameLayout } from '@/shared/components/GameLayout'
 import { ROUTES } from '@/shared/config/routes'
 import { useGameStore } from '@/shared/store'
 import { PageTransition } from '@/shared/components/PageTransition'
+import { CountdownTimer } from '@/widgets/CountdownTimer'
+import { PHASE_DURATIONS } from '@/shared/constants/app'
 
 type DayStep = 'morning' | 'discussion' | 'voting'
 
@@ -82,6 +84,11 @@ export function DayPhasePage() {
       content: (
         <>
           <p className="text-gray-400">Allow players to discuss and debate</p>
+          <CountdownTimer
+            initialSeconds={PHASE_DURATIONS.day}
+            autoStart={false}
+            showControls={true}
+          />
           <Button
             className="w-full bg-amber-600 hover:bg-amber-700 text-amber-950 py-6 text-base"
             onClick={() => setStep('voting')}
@@ -99,6 +106,11 @@ export function DayPhasePage() {
       content: (
         <>
           <p className="text-gray-400">Cast votes to eliminate a player</p>
+          <CountdownTimer
+            initialSeconds={PHASE_DURATIONS.voting}
+            autoStart={false}
+            showControls={true}
+          />
           <Button
             className="w-full bg-red-600 hover:bg-red-700 text-white py-6 text-base"
             onClick={() => navigate(ROUTES.VOTING)}

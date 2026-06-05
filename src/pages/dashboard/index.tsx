@@ -87,12 +87,30 @@ export function DashboardPage() {
                       <TableRow key={player.id} className="border-gray-700">
                         <TableCell className="text-gray-400">{player.number}</TableCell>
                         <TableCell className="text-amber-100 font-medium">{player.name}</TableCell>
-                        <TableCell className="text-gray-300">{player.role?.name || '-'}</TableCell>
+                        <TableCell>
+                          {player.role ? (
+                            <span className={`text-xs px-2 py-1 rounded ${
+                              player.role.alignment === 'werewolf'
+                                ? 'bg-red-900/50 text-red-300'
+                                : player.role.alignment === 'neutral'
+                                  ? 'bg-purple-900/50 text-purple-300'
+                                  : 'bg-emerald-900/50 text-emerald-300'
+                            }`}>
+                              {player.role.name}
+                            </span>
+                          ) : (
+                            <span className="text-gray-500">-</span>
+                          )}
+                        </TableCell>
                         <TableCell>
                           <span className={`text-xs px-2 py-1 rounded ${
-                            player.alive ? 'bg-emerald-900/50 text-emerald-300' : 'bg-red-900/50 text-red-300'
+                            player.alive
+                              ? 'bg-emerald-900/50 text-emerald-300'
+                              : player.poisoned
+                                ? 'bg-purple-900/50 text-purple-300'
+                                : 'bg-red-900/50 text-red-300'
                           }`}>
-                            {player.alive ? 'Alive' : 'Dead'}
+                            {player.alive ? 'Alive' : player.poisoned ? 'Poisoned' : 'Dead'}
                           </span>
                         </TableCell>
                       </TableRow>
